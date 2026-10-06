@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chronos ITT | Panel</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- Generación de QR (vista Docente) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <!-- Escaneo de QR con cámara (vista Alumno) -->
+  <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="logo">⏱</span> Chronos ITT</div>
+    <div class="topbar-right">
+      <label class="role-switch">Vista (pruebas):
+        <select id="roleSwitch">
+          <option value="docente">Docente</option>
+          <option value="alumno">Alumno</option>
+          <option value="admin">Administrador</option>
+        </select>
+      </label>
+      <span id="userName" class="muted"></span>
+      <button id="logoutBtn" class="btn btn-ghost">Salir</button>
+    </div>
+  </header>
+
+  <nav id="tabs" class="tabs" aria-label="Secciones"></nav>
+
+  <main class="container">
+
+    <!-- ===== DOCENTE: clase activa ===== -->
+    <section id="view-clase" class="view" hidden>
+      <div class="section-head">
+        <h1>Clase activa</h1>
+        <select id="grupoSelect"></select>
+      </div>
+
+      <div id="sinSesion" class="card session-card">
+        <p class="muted">No hay una sesión de pase de lista abierta para este grupo.</p>
+        <button id="iniciarSesion" class="btn btn-primary">Iniciar clase y generar QR</button>
+      </div>
+
+      <div id="conSesion" class="session-grid" hidden>
+        <div class="card qr-card">
+          <h3>Código QR de la sesión</h3>
+          <div id="qrcode"></div>
+          <p class="muted">Tolerancia: <span id="tolInfo"></span> min para "Presente"</p>
+          <p class="muted">Inicio: <span id="inicioInfo"></span></p>
+          <button id="cerrarSesion" class="btn btn-danger btn-block">Cerrar sesión de clase</button>
+        </div>
+
+        <div class="card">
+          <h3>Alumnos registrados</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Alumno</th><th>Hora</th><th>Estado</th></tr></thead>
+              <tbody id="listaEnVivo"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== DOCENTE: faltas por justificar ===== -->
+    <section id="view-justificar" class="view" hidden>
+      <div class="section-head">
+        <h1>Faltas por justificar</h1>
+        <select id="grupoSelectJustificar"></select>
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Alumno</th><th>Sesión</th><th>Estado</th><th>Acción</th></tr></thead>
+        <tbody id="faltasTabla"></tbody>
+      </table></div>
+    </section>
+
+    <!-- ===== ALUMNO: escanear ===== -->
+    <section id="view-escanear" class="view" hidden>
+      <h1>Pase de lista</h1>
+      <div id="escanerBox" class="card scan-card">
+        <p class="muted">Apunta la cámara al código QR que proyecta tu docente.</p>
+        <div id="reader"></div>
+        <button id="startScan" class="btn btn-primary btn-block">Activar cámara</button>
+        <button id="stopScan" class="btn btn-ghost btn-block" hidden>Cancelar escaneo</button>
+        <button id="simularScan" class="btn btn-ghost btn-block">Simular escaneo (sin cámara)</button>
+      </div>
+
+      <div id="confirmBox" class="card confirm-card" hidden>
+        <div id="confirmIcon" class="confirm-icon"></div>
+        <h2 id="confirmEstado"></h2>
+        <p id="confirmDetalle" class="muted"></p>
+        <button id="confirmOk" class="btn btn-primary btn-block">Listo</button>
+      </div>
+    </section>
+
+    <!-- ===== ALUMNO: mi historial ===== -->
+    <section id="view-historial" class="view" hidden>
+      <h1>Mi historial de asistencias</h1>
+      <div id="historialMaterias" class="grid"></div>
+    </section>
+
+    <!-- ===== ADMIN: resumen por grupo ===== -->
+    <section id="view-resumen" class="view" hidden>
+      <h1>Resumen de asistencias por grupo</h1>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Grupo / materia</th><th>Sesiones</th><th>Presentes</th><th>Retardos</th><th>Faltas</th><th>% Asistencia</th></tr></thead>
+        <tbody id="resumenTabla"></tbody>
+      </table></div>
+    </section>
+
+    <!-- ===== ADMIN: alertas de riesgo ===== -->
+    <section id="view-alertas" class="view" hidden>
+      <h1>Alertas de riesgo de baja</h1>
+      <p class="muted">3 retardos equivalen a 1 falta · 20% o más de faltas efectivas activa la alerta.</p>
+      <div id="alertasGrid" class="grid"></div>
+    </section>
+  </main>
+
+  <!-- Modal: justificar falta -->
+  <dialog id="justificarDialog">
+    <form id="justificarForm" method="dialog">
+      <h2>Justificar falta</h2>
+      <p id="justificarInfo" class="muted"></p>
+      <label for="justificarMotivo">Motivo</label>
+      <textarea id="justificarMotivo" rows="3" required placeholder="Ej. Incapacidad médica"></textarea>
+      <div class="dialog-actions">
+        <button type="button" class="btn btn-ghost" data-close>Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>

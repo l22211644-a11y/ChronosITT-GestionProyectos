@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chronos ITT | Iniciar sesión</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="login-page">
+  <main class="login-card">
+    <div class="brand brand-lg"><span class="logo">⏱</span> Chronos ITT</div>
+    <p class="muted">Control de asistencia por código QR · Instituto Tecnológico de Tijuana</p>
+
+    <form id="loginForm" novalidate>
+      <label for="usuario">Usuario o número de control</label>
+      <input id="usuario" name="usuario" type="text" autocomplete="username" placeholder="alumno" required>
+
+      <label for="password">Contraseña</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+
+      <p id="loginError" class="error" role="alert"></p>
+      <button type="submit" class="btn btn-primary btn-block">Entrar</button>
+    </form>
+
+    <p class="hint">Demo (contraseña <b>1234</b>): <b>docente</b> · <b>alumno</b> · <b>admin</b></p>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
