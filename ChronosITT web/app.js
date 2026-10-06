@@ -1,19 +1,11 @@
-/* =========================================================
-   Chronos ITT – Lógica de interfaz
-   Para conectar el backend real (Python/REST): pon
-   USE_MOCK = false y ajusta API_URL. Cada función de `api`
-   indica el endpoint que debe llamar con un comentario TODO.
-   ========================================================= */
-// Obtén la IP de tu PC en la red local (ejemplo: 192.168.1.75)
-const LOCAL_IP = '192.168.0.76'; // <-- Reemplaza por la IP local de tu laptop
+
+const LOCAL_IP = '192.168.0.76'; 
 
 const API_URL = `http://${LOCAL_IP}:8000/api`;
-const USE_MOCK = false; // <-- Cambia a false para conectar con la API real y BD
-const TOLERANCIA_MIN = 10; // minutos para contar "Presente"; después y antes del cierre = "Retardo"
+const USE_MOCK = false; 
+const TOLERANCIA_MIN = 10; 
 
-/* ---------- Datos simulados (mock), persistidos en localStorage
-   para que Docente / Alumno / Admin compartan el mismo estado
-   al alternar roles con el selector de pruebas. ---------- */
+
 function seed() {
   return {
     grupos: [
